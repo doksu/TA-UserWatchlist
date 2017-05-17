@@ -1,0 +1,19 @@
+<setup>
+        <block title="User Watchlist Configuration">
+        	<text>Documentation: https://github.com/doksu/TA-UserWatchlist</text>
+        </block>
+
+	<block title="Summary Index" endpoint="configs/conf-macros" entity="user_watchlist_index">
+                <input field="definition">
+                        <label>Collect changes to user watchlist entries into index:</label>
+                        <type>text</type>
+                </input>
+	</block>
+
+	<block title="Summary Sourcetype" endpoint="configs/conf-macros" entity="user_watchlist_sourcetype">
+                <input field="definition">
+                        <label>Collect changes to user watchlist entries with sourcetype:</label>
+                        <type>text</type>
+                </input>
+	</block>
+</setup>

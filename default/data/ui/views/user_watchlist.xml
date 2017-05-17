@@ -1,0 +1,98 @@
+<form>
+  <label>User Watchlist Editor</label>
+  <description>Use this dashboard to add/update and remove users from the watchlist. To view (not search) all entries, enter a wildcard in the 'User' field, but be careful not to select the 'Delete' action with a wildcard in the User field, as this will delete all the watchlist entries.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="text" token="user">
+      <label>User</label>
+      <default>*</default>
+    </input>
+    <input type="time" token="period" searchWhenChanged="false">
+      <label>Start and End Time</label>
+      <default>
+        <earliest>-1s</earliest>
+        <latest>+3mon</latest>
+      </default>
+    </input>
+    <input type="text" token="reference">
+      <label>Reference</label>
+      <default>none</default>
+    </input>
+    <input type="dropdown" token="reason">
+      <label>Reason</label>
+      <populatingSearch fieldForLabel="reason" fieldForValue="reason">|inputlookup user_watchlist_reasons</populatingSearch>
+      <initialValue>Investigation</initialValue>
+    </input>
+    <input type="text" token="comment">
+      <label>Comment</label>
+      <default>none</default>
+    </input>
+    <input type="dropdown" token="action">
+      <label>Action</label>
+      <choice value="modify">Add/Update</choice>
+      <choice value="delete">Delete</choice>
+      <default>modify</default>
+    </input>
+  </fieldset>
+  <row depends="$workflow_action$">
+    <panel>
+      <table>
+        <title>Previous Entry for User</title>
+        <search>
+          <query>| inputlookup user_watchlist where _key="$user$" | rename _key AS user | table user creator editor created updated start end reference reason comment | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(created) | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(updated) | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(start) | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(end)</query>
+          <earliest>0</earliest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">undefined</option>
+        <option name="drilldown">none</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Entries</title>
+        <search>
+          <query>| append [| stats count
+| append [|rest /services/authentication/current-context
+| search NOT username="splunk-system-user"
+| stats values(username) as editor]
+| eval _key="$user$"
+| eval start=if(match("$period.earliest$","^\d+"),"$period.earliest$",relative_time(now(),"$period.earliest$"))
+| eval end=if(match("$period.latest$","^\d+"),"$period.latest$",relative_time(now(),"$period.latest$"))
+| eval reference="$reference$"
+| eval reason="$reason$"
+| eval comment="$comment$"
+| regex _key!="^\*$"
+| eval _time=now()
+| transaction _time
+| rename _time as updated
+| lookup user_watchlist _key OUTPUT created, creator
+| eval created=coalesce(created,updated)
+| eval creator=coalesce(creator,editor)
+| fields - count]
+| outputlookup append=t user_watchlist
+| search NOT _key="*"
+| inputlookup append=t user_watchlist
+| eval action="$action$"
+| search action="modify" OR (action="delete" AND NOT _key="$user$")
+| table _key creator editor created updated start end reference reason comment
+| sort 0 updated
+| outputlookup user_watchlist
+| rename _key as user
+| convert timeformat="%Y-%m-%d %H:%M:%S" ctime(created)
+| convert timeformat="%Y-%m-%d %H:%M:%S" ctime(updated)
+| convert timeformat="%Y-%m-%d %H:%M:%S" ctime(start)
+| convert timeformat="%Y-%m-%d %H:%M:%S" ctime(end)</query>
+          <earliest>0</earliest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">undefined</option>
+        <option name="drilldown">none</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+</form>
