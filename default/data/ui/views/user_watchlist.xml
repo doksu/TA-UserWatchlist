@@ -1,6 +1,6 @@
 <form>
   <label>User Watchlist Editor</label>
-  <description>Use this dashboard to add/update and remove users from the watchlist. To view (not search) all entries, enter a wildcard in the 'User' field, but be careful not to select the 'Delete' action with a wildcard in the User field, as this will delete all the watchlist entries.</description>
+  <description>Use this dashboard to add/update and remove users from the watchlist. To view (not search) all entries, enter a wildcard in the 'User' field, but be careful not to select the 'Delete' action with a wildcard in the User field, as this will delete all the watchlist entries. The list is sorted by most recently updated.</description>
   <fieldset submitButton="true" autoRun="true">
     <input type="text" token="user">
       <label>User</label>
@@ -81,6 +81,7 @@
 | sort 0 updated
 | outputlookup user_watchlist
 | rename _key as user
+| sort 0 - updated
 | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(created)
 | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(updated)
 | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(start)
@@ -91,7 +92,7 @@
         <option name="rowNumbers">undefined</option>
         <option name="drilldown">none</option>
         <option name="dataOverlayMode">none</option>
-        <option name="count">10</option>
+        <option name="count">100</option>
       </table>
     </panel>
   </row>
