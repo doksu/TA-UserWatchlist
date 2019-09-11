@@ -19,8 +19,11 @@
     </input>
     <input type="dropdown" token="reason">
       <label>Reason</label>
-      <populatingSearch fieldForLabel="reason" fieldForValue="reason">|inputlookup user_watchlist_reasons</populatingSearch>
+      <populatingSearch fieldForLabel="reason" fieldForValue="reason">|inputlookup user_watchlist_reasons<query>| inputlookup user_watchlist_reasons</query>
+      </populatingSearch>
       <initialValue>Investigation</initialValue>
+      <fieldForLabel>reason</fieldForLabel>
+      <fieldForValue>reason</fieldForValue>
     </input>
     <input type="text" token="comment">
       <label>Comment</label>
@@ -40,12 +43,12 @@
         <search>
           <query>| inputlookup user_watchlist where _key="$user$" | rename _key AS user | table user creator editor created updated start end reference reason comment | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(created) | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(updated) | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(start) | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(end)</query>
           <earliest>0</earliest>
+          <latest></latest>
         </search>
-        <option name="wrap">undefined</option>
-        <option name="rowNumbers">undefined</option>
-        <option name="drilldown">none</option>
-        <option name="dataOverlayMode">none</option>
         <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </table>
     </panel>
   </row>
@@ -54,7 +57,9 @@
       <table>
         <title>Entries</title>
         <search>
-          <query>| append [| stats count
+          <query>| stats count
+| where count!=0
+| append [| stats count
 | append [|rest /services/authentication/current-context
 | search NOT username="splunk-system-user"
 | stats values(username) as editor]
@@ -87,12 +92,12 @@
 | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(start)
 | convert timeformat="%Y-%m-%d %H:%M:%S" ctime(end)</query>
           <earliest>0</earliest>
+          <latest></latest>
         </search>
-        <option name="wrap">undefined</option>
-        <option name="rowNumbers">undefined</option>
-        <option name="drilldown">none</option>
-        <option name="dataOverlayMode">none</option>
         <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </table>
     </panel>
   </row>
