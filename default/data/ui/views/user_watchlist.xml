@@ -1,4 +1,4 @@
-<form>
+<form version="1.1">
   <label>User Watchlist Editor</label>
   <description>Use this dashboard to add/update and remove users from the watchlist. To view (not search) all entries, enter a wildcard in the 'User' field, but be careful not to select the 'Delete' action with a wildcard in the User field, as this will delete all the watchlist entries. The list is sorted by most recently updated.</description>
   <fieldset submitButton="true" autoRun="true">
