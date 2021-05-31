@@ -19,11 +19,12 @@
     </input>
     <input type="dropdown" token="reason">
       <label>Reason</label>
-      <populatingSearch fieldForLabel="reason" fieldForValue="reason">|inputlookup user_watchlist_reasons<query>| inputlookup user_watchlist_reasons</query>
-      </populatingSearch>
       <initialValue>Investigation</initialValue>
       <fieldForLabel>reason</fieldForLabel>
       <fieldForValue>reason</fieldForValue>
+      <search>
+        <query>|inputlookup user_watchlist_reasons</query>
+      </search>
     </input>
     <input type="text" token="comment">
       <label>Comment</label>
